@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#101a16">
+  <title>RainAware — Intelligent Plant Care</title>
+
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+<body>
+  <aside class="sidebar">
+    <a class="brand" href="/">
+      <span class="brand-icon">✳</span>
+      <span>Rain<span class="accent">Aware</span></span>
+    </a>
+
+    <div class="nav-label">WORKSPACE</div>
+    <a class="nav-link active" href="#overview">▦ &nbsp; Overview</a>
+    <a class="nav-link" href="#environment">◉ &nbsp; Environment</a>
+    <a class="nav-link" href="#analytics">⌁ &nbsp; Analytics</a>
+    <a class="nav-link" href="#irrigation">♧ &nbsp; Irrigation</a>
+
+    <div class="sidebar-bottom">
+      <div class="connection-indicator">
+        <span class="dot" id="connectionDot"></span>
+        <div>
+          <strong id="connectionText">Connecting...</strong>
+          <small>ESP32 connection</small>
+        </div>
+      </div>
+      <p class="sidebar-note">Smart irrigation<br>powered by IoT</p>
+    </div>
+  </aside>
+
+  <main class="main-content" id="overview">
+    <header class="topbar">
+      <div>
+        <div class="eyebrow">SMART AGRICULTURE / DASHBOARD</div>
+        <h1>Good day, <span class="accent">grower.</span></h1>
+        <p class="muted">Monitor your plant's environment in real time.</p>
+      </div>
+
+      <div class="top-actions">
+        <span class="live-pill"><span class="dot"></span> LIVE MONITORING</span>
+        <button class="refresh-button" id="refreshButton">↻ Refresh</button>
+      </div>
+    </header>
+
+    <section class="hero">
+      <div class="hero-content">
+        <span class="hero-tag">YOUR PERSONAL WEATHER STATION</span>
+        <h2>Grow smarter.<br>Waste less water.</h2>
+        <p>Environmental intelligence for healthier plants and more efficient irrigation.</p>
+        <a href="#environment" class="hero-link">Explore environment <span>↗</span></a>
+      </div>
+      <div class="hero-illustration" aria-hidden="true">
+        <div class="orbit orbit-one"></div>
+        <div class="orbit orbit-two"></div>
+        <div class="sun">☼</div>
+        <div class="plant-emoji">🌱</div>
+        <div class="floating-chip chip-top">IoT · ACTIVE</div>
+        <div class="floating-chip chip-bottom">EARTH FIRST</div>
+      </div>
+    </section>
+
+    <section class="section-heading" id="environment">
+      <div>
+        <div class="eyebrow">LIVE TELEMETRY</div>
+        <h2>Environmental overview</h2>
+      </div>
+      <span class="updated-label" id="lastUpdated">Waiting for readings</span>
+    </section>
+
+    <section class="metrics-grid">
+      <article class="metric-card">
+        <div class="metric-top">
+          <span class="metric-icon orange">☼</span>
+          <span class="metric-label">TEMPERATURE</span>
+        </div>
+        <div class="metric-value"><span id="temperature">--</span><small>°C</small></div>
+        <div class="metric-footer">Ambient air temperature</div>
+      </article>
+
+      <article class="metric-card">
+        <div class="metric-top">
+          <span class="metric-icon blue">≈</span>
+          <span class="metric-label">AIR HUMIDITY</span>
+        </div>
+        <div class="metric-value"><span id="humidity">--</span><small>%</small></div>
+        <div class="metric-footer">Relative humidity</div>
+      </article>
+
+      <article class="metric-card">
+        <div class="metric-top">
+          <span class="metric-icon purple">◉</span>
+          <span class="metric-label">AIR PRESSURE</span>
+        </div>
+        <div class="metric-value"><span id="pressure">--</span><small>hPa</small></div>
+        <div class="metric-footer">Atmospheric pressure</div>
+      </article>
+
+      <article class="metric-card">
+        <div class="metric-top">
+          <span class="metric-icon green">♧</span>
+          <span class="metric-label">SOIL MOISTURE</span>
+        </div>
+        <div class="metric-value"><span id="soil">--</span><small>%</small></div>
+        <div class="progress-track">
+          <div class="progress-fill" id="soilBar"></div>
+        </div>
+        <div class="metric-footer" id="soilDescription">Awaiting sensor data</div>
+      </article>
+    </section>
+
+    <section class="content-grid" id="analytics">
+      <article class="panel chart-panel">
+        <div class="panel-heading">
+          <div>
+            <div class="eyebrow">SENSOR HISTORY</div>
+            <h2>Environmental trends</h2>
+          </div>
+          <span class="chart-badge">Last 100 readings</span>
+        </div>
+
+        <div class="chart-legend">
+          <span><i class="legend-dot soil-dot"></i> Soil moisture</span>
+          <span><i class="legend-dot humidity-dot"></i> Humidity</span>
+        </div>
+
+        <div class="chart-container">
+          <canvas id="historyChart"></canvas>
+        </div>
+      </article>
+
+      <article class="panel weather-panel">
+        <div class="eyebrow">WEATHER INTELLIGENCE</div>
+        <h2>Rain outlook</h2>
+        <div class="weather-symbol" id="weatherSymbol">☁</div>
+        <div class="weather-status" id="forecastStatus">Checking forecast...</div>
+        <p class="muted weather-description" id="forecastDescription">
+          Waiting for weather information.
+        </p>
+
+        <div class="weather-divider"></div>
+
+        <div class="weather-row">
+          <span>Rain sensor</span>
+          <strong id="rainStatus">--</strong>
+        </div>
+        <div class="weather-row">
+          <span>Forecast source</span>
+          <strong>Open-Meteo</strong>
+        </div>
+        <p class="small-note">
+          Forecasts are estimates, not guarantees of rainfall.
+        </p>
+      </article>
+    </section>
+
+    <section class="section-heading" id="irrigation">
+      <div>
+        <div class="eyebrow">AUTOMATION</div>
+        <h2>Irrigation control centre</h2>
+      </div>
+    </section>
+
+    <section class="content-grid bottom-grid">
+      <article class="panel pump-panel">
+        <div class="pump-icon">♧</div>
+        <div class="pump-details">
+          <div class="eyebrow">WATER PUMP</div>
+          <h2 id="pumpStatus">Waiting for data</h2>
+          <p class="muted" id="pumpDescription">
+            Pump status will appear when sensor readings arrive.
+          </p>
+        </div>
+        <span class="pump-badge" id="pumpBadge">UNKNOWN</span>
+      </article>
+
+      <article class="panel recommendation-panel">
+        <div class="recommendation-icon">✳</div>
+        <div>
+          <div class="eyebrow">SYSTEM INSIGHT</div>
+          <h2>Smart recommendation</h2>
+          <p id="advice">Waiting for the first sensor readings.</p>
+          <span class="small-note">Based on the latest available sensor data.</span>
+        </div>
+      </article>
+    </section>
+
+    <footer>
+      <span>RainAware <span class="accent">●</span> Smart Plant Monitoring</span>
+      <span>ESP32 · Flask · IoT · Open-Meteo</span>
+    </footer>
+  </main>
+
+  <script src="{{ url_for('static', filename='dashboard.js') }}"></script>
+</body>
+</html>
